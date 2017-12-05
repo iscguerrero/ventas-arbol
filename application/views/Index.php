@@ -35,7 +35,7 @@
 						</div>
 					</div>
 					<div class="card-content table-responsive table-full-width">
-						<table class="table table-hover table-condensed">
+						<table class="table table-hover" id="tabla_reporte">
 							<thead>
 								<th>División</th>
 								<th>Zona</th>
@@ -79,35 +79,97 @@
 				}
 			});
 			// Generar el reporte de ventas inicial
-			$('#formReporte').submit(function() {
-				ObtenerDivisiones($('#fecha').val());
+			$('#formReporte').submit(function(e) {
+				e.preventDefault();
+				obtenerData('division');
+			});
+			// Abrir/Cerrar el arbol
+			$('#tabla_reporte tbody').on('click', 'span', function() {
+				var tr = $(this).closest('tr');
+				$(this).hasClass('ti-angle-right') ? $(this).removeClass('ti-angle-right').addClass('ti-angle-down') : $(this).addClass('ti-angle-right').removeClass('ti-angle-down');
 			});
 		});
+
 		// Funcion para obtener las divisiones
-		function obtenerDivisiones(fecha) {
+		function obtenerData(tipo) {
+			switch (tipo) {
+				case 'division':
+					url = 'ObtenerDivisiones'
+					break;
+				default:
+					break;
+			}
 			$.ajax({
-				url: 'ObtenerDivisiones',
+				url: url,
 				data: {fecha: fecha},
 				type: 'POST',
 				async: true,
 				cache: false,
 				dataType: 'json',
-				success: function (json) {
-					
+				success: function (data) {
+					$.each(data, function(key, item) {
+						renderRow(parent, item);
+					});
 				}
 			});
 		}
-		// Funcion para obtener las zonas
-		function obtenerZonas() {
+
+		// Funcion para renderizar una fila en el reporte
+		function renderRow(parent, row) {
+			$parent = document.getElementById(parent);
+			$body = document.getElementById('reporte');
+			var nextIndex = $parent.rowIndex;
+			var newRow = $body.insertRow(nextIndex);
+
+			newRow.setAttribute('id', row['id'])
+			.setAttribute('data-tipo', row['tipo'])
+			.setAttribute('data-open', rowData['open'])
+			.setAttribute('data-division', row['division'])
+			.setAttribute('data-zona', row['zona'])
+			.setAttribute('data-tienda', row['tienda'])
+
+			var cellDivision = newRow.insertCell(0);
+			var cellZona = newRow.insertCell(1);
+			var cellTienda = newRow.insertCell(2);
+			var cellProducto = newRow.insertCell(3);
+			var cellDescripcion = newRow.insertCell(4);
+			var cellExistencia = newRow.insertCell(5);
+			var cellValor = newRow.insertCell(6);
+			var cellVentas = newRow.insertCell(7);
+			var cellDiasDeInv = newRow.insertCell(8);
+
+			cellDivision.innerHTML = row.division;
+			cellZona.innerHTML = row.zona;
+			cellTienda.innerHTML = row.tienda;
+			cellProducto.innerHTML = row.producto;
+			cellDescripcion.innerHTML = row.descripcion;
+			cellExistencia.innerHTML = formato_numero(row['existencia'], 0, '.', ',');
+			cellValor.innerHTML = formato_numero(row['valor'], 0, '.', ',');
+			cellVentas.innerHTML = formato_numero(row['ventas'], 0, '.', ',');
+			cellDiasDeInv.innerHTML = formato_numero(row['dias_de_inv'], 0, '.', ',');
+			cellExistencia.className = 'text-right';
+			cellValor.className = 'text-right';
+			cellVentas.className = 'text-right';
+			cellDiasDeInv.className = 'text-right';
+
+			nextIndex = nextIndex + 1;
+
+			//if(row.tipo == 'division')
 
 		}
-		// Funcion para obtener las tiendas
-		function obtenerTiendas() {
 
-		}
-		// Funcion para obtener los productos
-		function obtenerProductos() {
-
+		function formato_numero(numero, decimales, separador_decimal, separador_miles){
+			numero = parseFloat(numero);
+			if(isNaN(numero)) return '';
+			if(decimales!==undefined) numero=numero.toFixed(decimales);
+			numero = numero.toString().replace('.', separador_decimal!==undefined ? separador_decimal : ',');
+			if(separador_miles) {
+				var miles=new RegExp("(-?[0-9]+)([0-9]{3})");
+				while(miles.test(numero)) {
+					numero=numero.replace(miles, '$1' + separador_miles + '$2');
+				}
+			}
+			return numero;
 		}
 	</script>
 </html>
