@@ -7,15 +7,13 @@ class Reporte extends Base_Controller {
 	}
 	# Método para obtener las divisiones de productos de la tienda
 	public function ObtenerDivisiones() {
-		exit(
-			json_encode(
-				array(
-					array('tipo'=>'division', 'division' => 'abacom', 'zona'=>'', 'tienda'=>'', 'producto'=>'', 'descripcion'=>'', 'existencia'=>0, 'valor'=>0, 'ventas'=>0, 'dias_de_inv'=>0),
-					array('tipo'=>'division', 'division' => 'abanocom', 'zona'=>'', 'tienda'=>'', 'producto'=>'', 'descripcion'=>'', 'existencia'=>0, 'valor'=>0, 'ventas'=>0, 'dias_de_inv'=>0),
-					array('tipo'=>'division', 'division' => 'vinylic', 'zona'=>'', 'tienda'=>'', 'producto'=>'', 'descripcion'=>'', 'existencia'=>0, 'valor'=>0, 'ventas'=>0, 'dias_de_inv'=>0),
-					array('tipo'=>'division', 'division' => 'cerveza', 'zona'=>'', 'tienda'=>'', 'producto'=>'', 'descripcion'=>'', 'existencia'=>0, 'valor'=>0, 'ventas'=>0, 'dias_de_inv'=>0)
-				)
-			)
-				);
+		if(!$this->input->is_ajax_request()) show_404();
+		# Se valida el contenido de la petición
+		$this->form_validation->set_rules('fecha', 'Fecha', 'required', array('required'=>'Es necesario proporcionar la fecha de reporte'));
+		if ($this->form_validation->run() == false) exit(json_encode(array('bandera'=>false, 'msj'=>validation_errors())));
+		# Se obtienen las divisiones
+		$fecha = $this->str_to_date($this->input->post('fecha'));
+		$this->load->model('item');
+		exit(json_encode(array('bandera'=>true, 'data'=>$this->item->divisiones($fecha))));
 	}
 }
