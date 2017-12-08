@@ -53,4 +53,8 @@ $route['default_controller'] = 'Reporte/Index';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+$route['ObtenerResumen'] = 'Reporte/ObtenerResumen';
 $route['ObtenerDivisiones'] = 'Reporte/ObtenerDivisiones';
+$route['ObtenerZonas'] = 'Reporte/ObtenerZonas';
+$route['ObtenerTiendas'] = 'Reporte/ObtenerTiendas';
+$route['ObtenerProductos'] = 'Reporte/ObtenerProductos';

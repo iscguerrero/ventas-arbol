@@ -21,8 +21,8 @@
 					<div class="card-header">
 						<div class="row">
 							<div class="col-xs-7">
-								<h4 class="card-title">Reporte Días de Inventario</h4>
-								<p class="category">aqui va otra cosa</p>
+								<h4 class="card-title">Valor Total del Inventario a Precio de Venta</h4>
+								<!--p class="category">aqui va otra cosa</p-->
 							</div>
 							<form id="formReporte">
 								<div class="col-xs-3">
@@ -35,7 +35,15 @@
 						</div>
 					</div>
 					<div class="card-content table-responsive table-full-width">
-						<table class="table table-hover" id="tabla_reporte">
+						<table class="table" id="resumen">
+							<thead>
+								<th></th>
+								<th class="text-right">Venta total de inventario cadena precio de venta</th>
+								<th class="text-right">Días de inventario global</th>
+							</thead>
+							<tbody id="bodyResumen"></tbody>
+						</table>
+						<table class="table table-hover hidden" id="reporte">
 							<thead>
 								<th>División</th>
 								<th>Zona</th>
@@ -47,7 +55,8 @@
 								<th class="text-right">Ventas</th>
 								<th class="text-right">Días de Inv.</th>
 							</thead>
-							<tbody id="reporte"></tbody>
+							<tbody id="bodyReporte"></tbody>
+							<tfoot id="footReporte"></tfoot>
 						</table>
 					</div>
 			</div>
