@@ -58,3 +58,4 @@ $route['ObtenerDivisiones'] = 'Reporte/ObtenerDivisiones';
 $route['ObtenerZonas'] = 'Reporte/ObtenerZonas';
 $route['ObtenerTiendas'] = 'Reporte/ObtenerTiendas';
 $route['ObtenerProductos'] = 'Reporte/ObtenerProductos';
+$route['ComprobarZonas'] = 'Reporte/ComprobarZonas';

@@ -25,7 +25,11 @@ class Reporte extends Base_Controller {
 		# Se obtienen las divisiones
 		$fecha = $this->str_to_date($this->input->post('fecha'));
 		$this->load->model('item');
-		exit(json_encode(array('bandera'=>true, 'data'=>$this->item->divisiones($fecha))));
+		$items = $this->item->divisiones($fecha);
+		foreach($items as $item) {
+			$item->diasDeInventario = $item->ventaPromedioDiaPesos == 0 ? 0 : $item->existenciaPesos / $item->ventaPromedioDiaPesos;
+		}
+		exit(json_encode(array('bandera'=>true, 'data'=>$items)));
 	}
 	# Método para obtener las zonas de una division
 	public function ObtenerZonas() {
@@ -37,7 +41,11 @@ class Reporte extends Base_Controller {
 		$fecha = $this->str_to_date($this->input->post('fecha'));
 		$division = $this->input->post('division');
 		$this->load->model('item');
-		exit(json_encode(array('bandera'=>true, 'data'=>$this->item->zonas($fecha, $division))));
+		$items = $this->item->zonas($fecha, $division);
+		foreach($items as $item) {
+			$item->diasDeInventario = $item->ventaPromedioDiaPesos == 0 ? 0 : $item->existenciaPesos / $item->ventaPromedioDiaPesos;
+		}
+		exit(json_encode(array('bandera'=>true, 'data'=>$items)));
 	}
 	# Método para obtener las tiendas de una zona
 	public function ObtenerTiendas() {
@@ -55,6 +63,7 @@ class Reporte extends Base_Controller {
 			$descripcion = $this->item->tienda($tienda->tienda);
 			$name = isset($descripcion->Name) ? ' - ' . $descripcion->Name : '';
 			$tienda->tiendaDes = $tienda->tienda . $name;
+			$tienda->diasDeInventario = $tienda->ventaPromedioDiaPesos == 0 ? 0 : $tienda->existenciaPesos / $tienda->ventaPromedioDiaPesos;
 		}
 		exit(json_encode(array('bandera'=>true, 'data'=>$tiendas)));
 	}
@@ -74,7 +83,16 @@ class Reporte extends Base_Controller {
 		foreach ($productos as $producto) {
 			$descripcion = $this->item->producto($producto->producto);
 			$producto->descripcion = $descripcion->Description;
+			$producto->diasDeInventario = $producto->ventaPromedioDiaPesos == 0 ? 0 : $producto->existenciaPesos / $producto->ventaPromedioDiaPesos;
 		}
 		exit(json_encode(array('bandera'=>true, 'data'=>$productos)));
+	}
+	# Metodo para comprobar la relacion tienda - zona
+	public function ComprobarZonas() {
+		if(!$this->input->is_ajax_request()) show_404();
+		$this->load->model('item');
+		$tdz = $this->item->tiendasDobleZona();
+		$tsz = $this->item->tiendasSinZona();
+		exit(json_encode(array('bandera'=>true, 'tdz'=>$tdz, 'tsz'=>$tsz)));
 	}
 }

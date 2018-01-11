@@ -69,7 +69,50 @@ $(document).ready(function () {
 		}
 	});
 
+	// Comprobamos si existen tiendas sin zona asignada o tiendas que tengan más de una zona asignada
+	comprobarZonas();
+	$("#reporte").freezeHeader();
 });
+
+// Funcion para comprobar la relación zona-tienda
+function comprobarZonas() {
+	$.ajax({
+		url: 'ComprobarZonas',
+		type: 'POST',
+		async: true,
+		cache: false,
+		dataType: 'json',
+		beforeSend: function () {
+			swal({
+				html: '<h3>Cargando datos, espera...</h3>',
+				showConfirmButton: false
+			});
+		},
+		success: function (data) {
+			if (data.bandera == false) {
+				swal({
+					title: "Atiende!",
+					html: data.msj,
+					buttonsStyling: true,
+					confirmButtonClass: "btn btn-warning btn-fill"
+				});
+				return false
+			}
+			if (data.tdz.length > 0 || data.tsz.length > 0 ) {
+				$('#ttz').text(data.tdz.length);
+				$.each(data.tdz, function (index, tienda) {
+					$('#tz').append(tienda.tienda + ' ' + tienda.duplicados + ', ');
+				});
+				$('#ttn').text(data.tsz.length);
+				$.each(data.tsz, function (index, tienda) {
+					$('#tn').append(tienda.tienda + ' ' + tienda.nombre + ', ');
+				});
+				$('#zonas').removeClass('hidden');
+				swal.close();
+			}
+		}
+	});
+}
 
 // Funcion para renderizar el resumen de ventas
 function renderResumen() {
@@ -89,6 +132,7 @@ function renderResumen() {
 			});
 		},
 		success: function (data) {
+			$('#bodyReporte').empty();
 			if (data.bandera == false) {
 				swal({
 					title: "Atiende!",
@@ -100,10 +144,12 @@ function renderResumen() {
 				$('#bodyResumen').html(
 					"<tr data-open='false' style='background-color: " + colores[0] + "'>" +
 					"<td><span class='ti-angle-right' style='cursor: pointer'></span></td>" +
-					"<td class='text-right'>" + formato_numero(data.data.ventas, 0, '.', ',') + "</td>" +
-					"<td class='text-right'>" + formato_numero(data.data.dias_de_inv, 0, '.', ',') + "</td>" +
+					"<td class='text-right'>$ " + formato_numero(data.data.valorInventarioPesos, 2, '.', ',') + "</td>" +
+					"<td class='text-right'>$ " + formato_numero(data.data.ventaPromedio, 2, '.', ',') + "</td>" +
+					"<td class='text-right'>" + formato_numero(data.data.diasDeInventario, 2, '.', ',') + "</td>" +
 					"</tr>"
 				);
+				//$('.table-fixed-header').fixedHeader();
 				swal.close();
 			}
 		}
@@ -165,23 +211,26 @@ function obtenerData(tipo, tr) {
 // Funcion para renderizar el footer del reporte
 function renderFooter(data) {
 	$('#footReporte').empty();
-	totalExistencia = totalValor = totalVentas = totalDias = 0;
+	tExistenciaPiezas = tExistenciaPesos = tventaPromedioDiaPiezas = tventaPromedioDiaPesos = tdiasDeInventario = 0;
 	$.each(data, function (index, row) {
-		totalExistencia = totalExistencia + parseFloat(row.existencia);
-		totalValor = totalValor + parseFloat(row.valor);
-		totalVentas = totalVentas + parseFloat(row.ventas);
-		totalDias = totalDias + parseFloat(row.dias_de_inv);
+		tExistenciaPiezas = tExistenciaPiezas + parseFloat(row.existenciaPiezas);
+		tExistenciaPesos = tExistenciaPesos + parseFloat(row.existenciaPesos);
+		tventaPromedioDiaPiezas = tventaPromedioDiaPiezas + parseFloat(row.ventaPromedioDiaPiezas);
+		tventaPromedioDiaPesos = tventaPromedioDiaPesos + parseFloat(row.ventaPromedioDiaPesos);
 	});
+	tdiasDeInventario = tExistenciaPesos / tventaPromedioDiaPesos;
 	$('#footReporte').html("<tr>" +
 		"<th></th>" +
 		"<th></th>" +
 		"<th></th>" +
 		"<th></th>" +
 		"<th></th>" +
-		"<th class='text-right'>" + formato_numero(totalExistencia, 0, '.', ',') + "</th>" +
-		"<th class='text-right'>" + formato_numero(totalValor, 0, '.', ',') + "</th>" +
-		"<th class='text-right'>" + formato_numero(totalVentas, 0, '.', ',') + "</th>" +
-		"<th class='text-right'>" + formato_numero(totalDias / data.length, 0, '.', ',') + "</th>" +
+		"<th></th>" +
+		"<th class='text-right'>" + formato_numero(tExistenciaPiezas, 2, '.', ',') + "</th>" +
+		"<th class='text-right'>$ " + formato_numero(tExistenciaPesos, 2, '.', ',') + "</th>" +
+		"<th class='text-right'>" + formato_numero(tventaPromedioDiaPiezas, 2, '.', ',') + "</th>" +
+		"<th class='text-right'>$ " + formato_numero(tventaPromedioDiaPesos, 2, '.', ',') + "</th>" +
+		"<th class='text-right'>" + formato_numero(tdiasDeInventario, 2, '.', ',') + "</th>" +
 		"</tr>");
 }
 
@@ -203,10 +252,12 @@ function renderRow(parent, data) {
 		var cellTienda = newRow.insertCell(2);
 		var cellProducto = newRow.insertCell(3);
 		var cellDescripcion = newRow.insertCell(4);
-		var cellExistencia = newRow.insertCell(5);
-		var cellValor = newRow.insertCell(6);
-		var cellVentas = newRow.insertCell(7);
-		var cellDiasDeInv = newRow.insertCell(8);
+		var cellPrecioVenta = newRow.insertCell(5);
+		var cellExistenciaPiezas = newRow.insertCell(6);
+		var cellExistenciaPesos = newRow.insertCell(7);
+		var cellVentaPromedioDiaPiezas = newRow.insertCell(8);
+		var cellVentaPromedioDiaPesos = newRow.insertCell(9);
+		var cellDiasDeInv = newRow.insertCell(10);
 
 		strSpan = "<span class='ti-angle-right' style='cursor: pointer'></span> ";
 		if (row.tipo == 'division') newRow.style.backgroundColor = colores[1];
@@ -219,19 +270,21 @@ function renderRow(parent, data) {
 		cellTienda.innerHTML = row.tipo == 'tienda' ? strSpan + row.tiendaDes : '';
 		cellProducto.innerHTML = row.producto;
 		cellDescripcion.innerHTML = row.descripcion;
-		cellExistencia.innerHTML = formato_numero(row['existencia'], 0, '.', ',');
-		cellValor.innerHTML = formato_numero(row['valor'], 0, '.', ',');
-		cellVentas.innerHTML = formato_numero(row['ventas'], 0, '.', ',');
-		cellDiasDeInv.innerHTML = formato_numero(row['dias_de_inv'], 0, '.', ',');
-		cellExistencia.className = 'text-right';
-		cellValor.className = 'text-right';
-		cellVentas.className = 'text-right';
+		cellPrecioVenta.innerHTML = row.tipo == 'producto' ? formato_numero(row['PrecioVenta'], 2, '.', ',') : '';
+		cellExistenciaPiezas.innerHTML = formato_numero(row['existenciaPiezas'], 2, '.', ',');
+		cellExistenciaPesos.innerHTML = '$ ' + formato_numero(row['existenciaPesos'], 2, '.', ',');
+		cellVentaPromedioDiaPiezas.innerHTML = formato_numero(row['ventaPromedioDiaPiezas'], 2, '.', ',');
+		cellVentaPromedioDiaPesos.innerHTML = '$ ' + formato_numero(row['ventaPromedioDiaPesos'], 2, '.', ',');
+		cellDiasDeInv.innerHTML = formato_numero(row['diasDeInventario'], 2, '.', ',');
+		cellPrecioVenta.className = 'text-right';
+		cellExistenciaPiezas.className = 'text-right';
+		cellExistenciaPesos.className = 'text-right';
+		cellVentaPromedioDiaPiezas.className = 'text-right';
+		cellVentaPromedioDiaPesos.className = 'text-right';
 		cellDiasDeInv.className = 'text-right';
 
 		nextIndex = nextIndex + 1;
 	});
-
-
 }
 
 // Funcion para remover los child rows de un tr
@@ -240,7 +293,6 @@ function removeItem(parent) {
 	var division = parent.attr('data-division');
 	var zona = parent.attr('data-zona');
 	var tienda = parent.attr('data-tienda');
-
 	if (parent.attr('data-tipo') == 'division') {
 		$('#reporte tbody tr').each(function (index) {
 			if ($(this).index() != parentIndex && $(this).attr('data-division') == division) {
@@ -260,8 +312,10 @@ function removeItem(parent) {
 			}
 		});
 	}
+	//$('.table-fixed-header').fixedHeader();
 }
 
+// Funcion para formatear cifras numéricas
 function formato_numero(numero, decimales, separador_decimal, separador_miles) {
 	numero = parseFloat(numero);
 	if (isNaN(numero)) return '';

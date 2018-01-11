@@ -12,9 +12,16 @@
 	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
 	<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Muli:400,300' type='text/css'>
 	<link rel="stylesheet" href="<?php echo base_url('assets/css/themify-icons.css') ?>">
+	<style>
+		table .header-fixed {
+			position: fixed;
+			top: 40px;
+			z-index: 1020;
+		}
+	</style>
 </head>
 <body>
-	<div class="container-fluid" style="max-width:1200px">
+	<div class="container-fluid" style="max-width:1700px">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="card">
@@ -35,25 +42,80 @@
 						</div>
 					</div>
 					<div class="card-content table-responsive table-full-width">
+						<div class="row hidden" id="zonas">
+							<div class="col-xs-4">
+								<div class="card">
+									<div class="card-content">
+										<div class="row">
+											<div class="col-xs-4">
+												<div class="icon-big icon-danger text-center">
+													<i class="ti-direction-alt"></i>
+												</div>
+											</div>
+											<div class="col-xs-8">
+												<div class="numbers">
+													<p>Tiendas asignadas a más de una zona</p>
+													<font id="ttz"></font>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="card-footer">
+										<hr />
+										<div class="stats" id="tz">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-xs-8">
+								<div class="card">
+									<div class="card-content">
+										<div class="row">
+											<div class="col-xs-4">
+												<div class="icon-big icon-danger text-center">
+													<i class="ti-pulse"></i>
+												</div>
+											</div>
+											<div class="col-xs-8">
+												<div class="numbers">
+													<p>Tiendas sin zona asignada</p>
+													<font id="ttn"></font>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="card-footer">
+										<hr />
+										<div class="stats" id="tn">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 						<table class="table" id="resumen">
 							<thead>
 								<th></th>
-								<th class="text-right">Venta total de inventario cadena precio de venta</th>
-								<th class="text-right">Días de inventario global</th>
+								<th class="text-right">Valor Inventario Pesos</th>
+								<th class="text-right">Venta Promedio Por Día</th>
+								<th class="text-right">Dias De Inventario</th>
 							</thead>
 							<tbody id="bodyResumen"></tbody>
 						</table>
 						<table class="table table-hover hidden" id="reporte">
-							<thead>
-								<th>División</th>
-								<th>Zona</th>
-								<th>Tienda</th>
-								<th>Producto</th>
-								<th>Descripción</th>
-								<th class="text-right">Existencia</th>
-								<th class="text-right">Valor</th>
-								<th class="text-right">Ventas</th>
-								<th class="text-right">Días de Inv.</th>
+							<thead style="background-color:#fff">
+								<tr>
+									<th>División</th>
+									<th>Zona</th>
+									<th>Tienda</th>
+									<th>Producto</th>
+									<th>Descripción</th>
+									<th class="text-right">Precio de Venta</th>
+									<th class="text-right">Existencia Piezas</th>
+									<th class="text-right">Existencia Pesos</th>
+									<th class="text-right">Venta Promedio Día Piezas</th>
+									<th class="text-right">Ventas Promedio Día Pesos</th>
+									<th class="text-right">Días de Inv.</th>
+								</tr>
 							</thead>
 							<tbody id="bodyReporte"></tbody>
 							<tfoot id="footReporte"></tfoot>
@@ -69,5 +131,6 @@
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/es.js"></script>
 	<script type="text/javascript" src="<?php echo base_url('assets/js/bootstrap-datetimepicker.js') ?>"></script>
 	<script type="text/javascript" src="<?php echo base_url('assets/js/sweetalert2.js') ?>"></script>
+	<script type="text/javascript" src="<?php echo base_url('assets/js/jquery.freezeheader.js') ?>"></script>
 	<script type="text/javascript" src="<?php echo base_url('public/index.js') ?>"></script>
 </html>
