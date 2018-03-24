@@ -4,13 +4,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Base_Controller extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
-		# Cargamos la base de datos por defecto
 			$this->load->database();
-		# Cargamos Helpers basicos
 			$this->load->helper(array('url','form', 'date'));
-		# Cargamos la libreria para la validacion de los formularios
 			$this->load->library(array('form_validation', 'session', 'encrypt'));
-	}#asdasdasd
+	}
 
 	# Funcion para formatear la fecha a formato Y-m-d
 	function str_to_date($string){

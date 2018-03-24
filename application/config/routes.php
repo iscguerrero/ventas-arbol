@@ -55,6 +55,7 @@ $route['translate_uri_dashes'] = FALSE;
 
 $route['ObtenerResumen'] = 'Reporte/ObtenerResumen';
 $route['ObtenerDivisiones'] = 'Reporte/ObtenerDivisiones';
+$route['ObtenerRegiones'] = 'Reporte/ObtenerRegiones';
 $route['ObtenerZonas'] = 'Reporte/ObtenerZonas';
 $route['ObtenerTiendas'] = 'Reporte/ObtenerTiendas';
 $route['ObtenerProductos'] = 'Reporte/ObtenerProductos';
