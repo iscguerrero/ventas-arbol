@@ -7,6 +7,7 @@ class Item extends CI_Model{
 	# Obtener el total de las ventas
 	public function venta($fecha, $divisiones, $regiones, $zonas, $tiendas, $productos){
 		$whereDivisiones = $whereRegiones = $whereZonas = $whereTiendas = $whereProductos = "";
+
 		if($divisiones != null) {
 			$divisiones = "'" . str_replace(',', "','", implode(',', $divisiones)) . "'";
 			$whereDivisiones = "AND items.[Division Code] in ($divisiones)";
