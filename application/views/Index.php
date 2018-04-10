@@ -8,6 +8,7 @@
 	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
 	<meta name="viewport" content="width=device-width" />
 	<link rel="stylesheet" href="<?php echo base_url('assets/css/bootstrap.min.css') ?>"/>
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css"/>
 	<link rel="stylesheet" href="<?php echo base_url('assets/css/select2.min.css') ?>"/>
 	<link rel="stylesheet" href="<?php echo base_url('assets/css/paper-dashboard.css') ?>"/>
 	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
@@ -22,6 +23,9 @@
 		.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
 			padding: 5px 5px;
 		}
+.ui-autocomplete{
+	z-index: 2147483647
+}
 	</style>
 </head>
 <body>
@@ -32,7 +36,7 @@
 				<div class="container-fluid">
 					<div class="card">
 						<div class="card-header">
-							<h4 class="card-title pull-left">Valor Total del Inventario a Precio de Venta</h4>
+							<h4 class="card-title pull-left">Valor Total del Inventario a Precio de Venta <font id="dia"></font></h4>
 							<button class="btn btn-info pull-right" type="button" data-toggle="modal" data-target="#modalFiltros">Filtros</button>
 						</div>
 						<div class="card-content">
@@ -71,7 +75,7 @@
 							<div class="col-xs-4">
 								<div class="card">
 									<div class="card-header">
-										<h5 class="card-title">Tiendas asignadas a más de una zona</h5>
+										<h5 class="card-title">Tiendas asignadas a más de una zona <font id="ntz"><font></h5>
 									</div>
 									<div class="card-content">
 										<div class="stats" id="tz"></div>
@@ -81,7 +85,7 @@
 							<div class="col-xs-4">
 								<div class="card">
 									<div class="card-header">
-										<h5 class="card-title">Tiendas sin zona asignada</h5>
+										<h5 class="card-title">Tiendas sin zona asignada <font id="ntn"><font></h5>
 									</div>
 									<div class="card-content">
 										<div class="stats" id="tn"></div>
@@ -91,7 +95,7 @@
 							<div class="col-xs-4">
 								<div class="card">
 									<div class="card-header">
-										<h5 class="card-title">Zonas sin región asignada</h5>
+										<h5 class="card-title">Zonas sin región asignada <font id="nzsr"><font></h5>
 									</div>
 									<div class="card-content">
 										<div class="stats" id="zsr"></div>
@@ -142,7 +146,13 @@
 						</div>
 						<div class="col-xs-12">
 							<div class="form-group">
-								<select multiple class="" id="productos" name="productos[]"></select>
+								<select multiple class="form-control" id="proveedores" name="proveedores[]"></select>
+							</div>
+						</div>
+						<div class="col-xs-12">
+							<div class="form-group">
+								<!--select multiple class="" id="productos" name="productos[]"></select-->
+								<input type="text" class="form-control" name="productos[]" id="productos" placeholder="Producto">
 							</div>
 						</div>
 					</div>
@@ -163,6 +173,7 @@
 </body>
 	<script type="text/javascript" src="<?php echo base_url('assets/js/jquery-3.1.1.min.js') ?>"></script>
 	<script type="text/javascript" src="<?php echo base_url('assets/js/bootstrap.min.js') ?>"></script>
+	<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="<?php echo base_url('assets/js/moment.min.js') ?>"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/es.js"></script>
 	<script type="text/javascript" src="<?php echo base_url('assets/js/bootstrap-datetimepicker.js') ?>"></script>

@@ -18,14 +18,15 @@ class Reporte extends Base_Controller {
 		$zonas = $this->input->post('zonas');
 		$tiendas = $this->input->post('tiendas');
 		$productos = $this->input->post('productos');
-		exit(json_encode(array('bandera'=>true, 'data'=>$this->item->venta($fecha, $divisiones, $regiones, $zonas, $tiendas, $productos))));
+		$proveedores = $this->input->post('proveedores');
+		exit(json_encode(array('bandera'=>true, 'data'=>$this->item->venta($fecha, $divisiones, $regiones, $zonas, $tiendas, $productos, $proveedores))));
 	}
 
 	# Método para obtener las divisiones de productos de la tienda
 	public function ObtenerDivisiones() {
 		if(!$this->input->is_ajax_request()) show_404();
 		$str = $this->input->post('str');
-		$fecha = ''; $divisiones = $regiones = $zonas = $tiendas = $productos = array();
+		$fecha = ''; $divisiones = $regiones = $zonas = $tiendas = $productos = $proveedores = array();
 		foreach ($str as $key => $item) {
 			if($item['name'] == 'fecha') $fecha = $this->str_to_date($item['value']);
 			if($item['name'] == 'divisiones[]') array_push($divisiones, $item['value']);
@@ -33,8 +34,9 @@ class Reporte extends Base_Controller {
 			if($item['name'] == 'zonas[]') array_push($zonas, $item['value']);
 			if($item['name'] == 'tiendas[]') array_push($tiendas, $item['value']);
 			if($item['name'] == 'productos[]') array_push($productos, $item['value']);
+			if($item['name'] == 'proveedores[]') array_push($proveedores, $item['value']);
 		}
-		$items = $this->item->divisiones($fecha, $divisiones, $regiones, $zonas, $tiendas, $productos);
+		$items = $this->item->divisiones($fecha, $divisiones, $regiones, $zonas, $tiendas, $productos, $proveedores);
 
 		exit(json_encode(array('bandera'=>true, 'data'=>$items)));
 	}
@@ -44,15 +46,16 @@ class Reporte extends Base_Controller {
 		if(!$this->input->is_ajax_request()) show_404();
 		$str = $this->input->post('str');
 		$division = $this->input->post('division');
-		$fecha = ''; $divisiones = $regiones = $zonas = $tiendas = $productos = array();
+		$fecha = ''; $divisiones = $regiones = $zonas = $tiendas = $productos = $proveedores = array();
 		foreach ($str as $key => $item) {
 			if($item['name'] == 'fecha') $fecha = $this->str_to_date($item['value']);
 			if($item['name'] == 'regiones[]') array_push($regiones, $item['value']);
 			if($item['name'] == 'zonas[]') array_push($zonas, $item['value']);
 			if($item['name'] == 'tiendas[]') array_push($tiendas, $item['value']);
 			if($item['name'] == 'productos[]') array_push($productos, $item['value']);
+			if($item['name'] == 'proveedores[]') array_push($proveedores, $item['value']);
 		}
-		$items = $this->item->regiones($fecha, $division, $regiones, $zonas, $tiendas, $productos);
+		$items = $this->item->regiones($fecha, $division, $regiones, $zonas, $tiendas, $productos, $proveedores);
 
 		exit(json_encode(array('bandera'=>true, 'data'=>$items)));
 	}
@@ -63,14 +66,15 @@ class Reporte extends Base_Controller {
 		$str = $this->input->post('str');
 		$division = $this->input->post('division');
 		$region = $this->input->post('region');
-		$fecha = ''; $regiones = $zonas = $tiendas = $productos = array();
+		$fecha = ''; $regiones = $zonas = $tiendas = $productos = $proveedores = array();
 		foreach ($str as $key => $item) {
 			if($item['name'] == 'fecha') $fecha = $this->str_to_date($item['value']);
 			if($item['name'] == 'zonas[]') array_push($zonas, $item['value']);
 			if($item['name'] == 'tiendas[]') array_push($tiendas, $item['value']);
 			if($item['name'] == 'productos[]') array_push($productos, $item['value']);
+			if($item['name'] == 'proveedores[]') array_push($proveedores, $item['value']);
 		}
-		$items = $this->item->zonas($fecha, $division, $region, $zonas, $tiendas, $productos);
+		$items = $this->item->zonas($fecha, $division, $region, $zonas, $tiendas, $productos, $proveedores);
 		exit(json_encode(array('bandera'=>true, 'data'=>$items)));
 	}
 
@@ -81,13 +85,14 @@ class Reporte extends Base_Controller {
 		$division = $this->input->post('division');
 		$region = $this->input->post('region');
 		$zona = $this->input->post('zona');
-		$fecha = ''; $divisiones = $regiones = $zonas = $tiendas = $productos = array();
+		$fecha = ''; $divisiones = $regiones = $zonas = $tiendas = $productos = $proveedores = array();
 		foreach ($str as $key => $item) {
 			if($item['name'] == 'fecha') $fecha = $this->str_to_date($item['value']);
 			if($item['name'] == 'tiendas[]') array_push($tiendas, $item['value']);
 			if($item['name'] == 'productos[]') array_push($productos, $item['value']);
+			if($item['name'] == 'proveedores[]') array_push($proveedores, $item['value']);
 		}
-		$items = $this->item->tiendas($fecha, $division, $region, $zona, $tiendas, $productos);
+		$items = $this->item->tiendas($fecha, $division, $region, $zona, $tiendas, $productos, $proveedores);
 
 		foreach ($items as $tienda) {
 			$descripcion = $this->item->tienda($tienda->tienda);
@@ -105,12 +110,13 @@ class Reporte extends Base_Controller {
 		$region = $this->input->post('region');
 		$zona = $this->input->post('zona');
 		$tienda = $this->input->post('tienda');
-		$fecha = ''; $productos = array();
+		$fecha = ''; $productos = $proveedores = array();
 		foreach ($str as $key => $item) {
 			if($item['name'] == 'fecha') $fecha = $this->str_to_date($item['value']);
 			if($item['name'] == 'productos[]') array_push($productos, $item['value']);
+			if($item['name'] == 'proveedores[]') array_push($proveedores, $item['value']);
 		}
-		$items = $this->item->productos($fecha, $division, $region, $zona, $tienda, $productos);
+		$items = $this->item->productos($fecha, $division, $region, $zona, $tienda, $productos, $proveedores);
 
 		foreach ($items as $producto) {
 			$descripcion = $this->item->producto($producto->producto);
@@ -132,6 +138,12 @@ class Reporte extends Base_Controller {
 	public function CatDivisiones() {
 		if(!$this->input->is_ajax_request()) show_404();
 		exit(json_encode($this->item->catDivisiones()));
+	}
+
+	# Metodo para obtener el catalogo de proveedores
+	public function CatProveedores() {
+		if(!$this->input->is_ajax_request()) show_404();
+		exit(json_encode($this->item->catProveedores()));
 	}
 
 	# Metodo para obtener una lista de todas las regiones
@@ -157,7 +169,10 @@ class Reporte extends Base_Controller {
 	# Metodo para obtener una lista de todos los productos en venta
 	public function CatProductos() {
 		if(!$this->input->is_ajax_request()) show_404();
-		exit(json_encode($this->item->catProductos()));
+		$term = $this->input->get('term');
+		$divisiones = $this->input->get('divisiones');
+
+		exit(json_encode($this->item->catProductos($term, $divisiones)));
 	}
 
 }
