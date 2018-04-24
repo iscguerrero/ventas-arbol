@@ -121,27 +121,35 @@
 					<div class="row">
 						<div class="col-xs-6">
 							<div class="form-group">
-								<input type="text" class="form-control datepicker text-center" name="fecha" id="fecha" placeholder="Al día" required />
+								<input type="text" class="form-control datepicker text-center" name="fecha" id="fecha" placeholder="Al día" required <?php echo $blocked == true ? "readonly" : "" ?> />
 							</div>
 						</div>
 						<div class="col-xs-6">
 							<div class="form-group">
-								<select multiple title="Divisiones" class="selectpicker" data-style="btn-info btn-block" data-size="5" id="divisiones" name="divisiones[]"></select>
+								<select data-live-search="true" multiple title="Divisiones" class="selectpicker" data-style="btn-info btn-block" data-size="5" id="divisiones" name="divisiones[]" <?php echo $blocked == true ? "disabled" : "" ?>></select>
 							</div>
 						</div>
 						<div class="col-xs-6">
 							<div class="form-group">
-								<select multiple title="Regiones" class="selectpicker" data-style="btn-info btn-block" data-size="5" id="regiones" name="regiones[]"></select>
+								<select data-live-search="true" multiple title="Regiones" class="selectpicker" data-style="btn-info btn-block" data-size="5" id="regiones" name="regiones[]" <?php echo $blocked == true ? "disabled" : "" ?>></select>
 							</div>
 						</div>
 						<div class="col-xs-6">
 							<div class="form-group">
-								<select multiple title="Zonas" class="selectpicker" data-style="btn-info btn-block" data-size="5" id="zonas" name="zonas[]"></select>
+								<select data-live-search="true" multiple title="Zonas" class="selectpicker" data-style="btn-info btn-block" data-size="5" id="zonas" name="zonas[]" <?php echo $blocked == true ? "disabled" : "" ?>></select>
 							</div>
 						</div>
 						<div class="col-xs-6">
 							<div class="form-group">
-								<select multiple title="Tiendas" class="selectpicker" data-style="btn-info btn-block" data-size="5" id="tiendas" name="tiendas[]"></select>
+								<select data-live-search="true" multiple title="Tiendas" class="selectpicker" data-style="btn-info btn-block" data-size="5" id="tiendas" name="tiendas[]" <?php echo $blocked == true ? "disabled" : "" ?>></select>
+							</div>
+						</div>
+						<div class="col-xs-6">
+							<div class="checkbox">
+									<input name="solo_productos" id="solo_productos" type="checkbox" <?php echo $blocked == true ? "disabled" : "" ?>>
+									<label for="solo_productos">
+									Solo productos
+								</label>
 							</div>
 						</div>
 						<div class="col-xs-12">
@@ -151,7 +159,6 @@
 						</div>
 						<div class="col-xs-12">
 							<div class="form-group">
-								<!--select multiple class="" id="productos" name="productos[]"></select-->
 								<input type="text" class="form-control" name="productos[]" id="productos" placeholder="Producto">
 							</div>
 						</div>
@@ -181,5 +188,6 @@
 	<script type="text/javascript" src="<?php echo base_url('assets/js/sweetalert2.js') ?>"></script>
 	<script type="text/javascript" src="<?php echo base_url('assets/js/select2.full.min.js') ?>"></script>
 	<script type="text/javascript" src="<?php echo base_url('assets/js/jquery.freezeheader.js') ?>"></script>
+	<script src="<?php echo base_url('assets/js/jquery.cookie.js') ?>" type="text/javascript"></script>
 	<script type="text/javascript" src="<?php echo base_url('public/index.js') ?>"></script>
 </html>

@@ -6,19 +6,22 @@ class Reporte extends Base_Controller {
 		parent::__construct();
 		$this->load->model('item');
 	}
-	public function Index() {
-		$this->load->view('Index');
+
+	public function Index($tienda = null) {
+		$data = $tienda == null ? array('blocked' => false) : array('blocked' => true);
+		$this->load->view('Index', $data);
 	}
+
 	# Método para obtener el resumen de ventas al dia
 	public function ObtenerResumen() {
 		if(!$this->input->is_ajax_request()) show_404();
 		$fecha = $this->str_to_date($this->input->post('fecha'));
-		$divisiones = $this->input->post('divisiones');
-		$regiones = $this->input->post('regiones');
-		$zonas = $this->input->post('zonas');
-		$tiendas = $this->input->post('tiendas');
-		$productos = $this->input->post('productos');
-		$proveedores = $this->input->post('proveedores');
+		$divisiones = $this->input->post('divisiones[]');
+		$regiones = $this->input->post('regiones[]');
+		$zonas = $this->input->post('zonas[]');
+		$tiendas = $this->input->post('tiendas[]');
+		$productos = $this->input->post('productos[]');
+		$proveedores = $this->input->post('proveedores[]');
 		exit(json_encode(array('bandera'=>true, 'data'=>$this->item->venta($fecha, $divisiones, $regiones, $zonas, $tiendas, $productos, $proveedores))));
 	}
 
@@ -117,6 +120,30 @@ class Reporte extends Base_Controller {
 			if($item['name'] == 'proveedores[]') array_push($proveedores, $item['value']);
 		}
 		$items = $this->item->productos($fecha, $division, $region, $zona, $tienda, $productos, $proveedores);
+
+		foreach ($items as $producto) {
+			$descripcion = $this->item->producto($producto->producto);
+			$producto->descripcion = $descripcion->Description;
+		}
+		exit(json_encode(array('bandera'=>true, 'data'=>$items)));
+	}
+
+	# Método para obtener los productos por division
+	public function ObtenerSoloProductos() {
+		if(!$this->input->is_ajax_request()) show_404();
+		$str = $this->input->post('str');
+		$division = $this->input->post('division');
+		$fecha = ''; $divisiones = $regiones = $zonas = $tiendas = $productos = $proveedores = array();
+		foreach ($str as $key => $item) {
+			if($item['name'] == 'fecha') $fecha = $this->str_to_date($item['value']);
+			if($item['name'] == 'divisiones[]') array_push($divisiones, $item['value']);
+			if($item['name'] == 'regiones[]') array_push($regiones, $item['value']);
+			if($item['name'] == 'zonas[]') array_push($zonas, $item['value']);
+			if($item['name'] == 'tiendas[]') array_push($tiendas, $item['value']);
+			if($item['name'] == 'productos[]') array_push($productos, $item['value']);
+			if($item['name'] == 'proveedores[]') array_push($proveedores, $item['value']);
+		}
+		$items = $this->item->soloProductos($fecha, $division, $regiones, $zonas, $tiendas, $productos, $proveedores);
 
 		foreach ($items as $producto) {
 			$descripcion = $this->item->producto($producto->producto);

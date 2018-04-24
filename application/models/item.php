@@ -91,7 +91,7 @@ class Item extends CI_Model{
 
 	# Obtener la venta por region
 	public function regiones($fecha, $division, $regiones, $zonas, $tiendas, $productos, $proveedores){
-		$whereRegiones = $whereZonas = $whereTiendas = $whereProductos = "";
+		$whereRegiones = $whereZonas = $whereTiendas = $whereProductos = $whereProveedores = "";
 		if($regiones != null) {
 			$regiones = "'" . str_replace(',', "','", implode(',', $regiones)) . "'";
 			$whereRegiones = "AND txr.[Subgroup Code] IN ($regiones)";
@@ -219,6 +219,46 @@ class Item extends CI_Model{
 			$whereProveedores .= " AND items.[Vendor No_] IN ($proveedores)";
 		}
 		$sql = "SELECT 'producto' as tipo, 'false' as _open, '$division' as division, '$region' as region, '$zona' as zona, '$tienda' as tienda, [Item No_] as producto, '' as descripcion, avg(precioVenta) as PrecioVenta, sum(existenciaPiezas) as existenciaPiezas, sum(existenciaPesos) as existenciaPesos, sum(ventaPromedioDiaPiezas) as ventaPromedioDiaPiezas, sum(ventaPromedioDiaPesos) as ventaPromedioDiaPesos from (select [Item No_], [Precio Venta] as precioVenta, ([Existencia Piezas] - VentasNoReg) as existenciaPiezas, (([Existencia Piezas] - VentasNoReg) * [Precio Venta]) as existenciaPesos, [Venta x Dia Piezas] as ventaPromedioDiaPiezas, [Venta x Dia Pesos] as ventaPromedioDiaPesos from [BDREPORTS].[dbo].[CTF\$Inventario] inve INNER JOIN [ASTURIANO].[dbo].[COORPORACION_EL_ASTURIANO\$Item] AS items on inve.[Item No_] = items.[No_] $whereProveedores where Date = '$fecha' and [Division Code] = '$division' and [Store No_] = '$tienda' $whereProductos) as productos group by [Item No_] order by [Item No_] asc ";
+		#echo $sql;
+		$query = $this->db->query($sql);
+		$productos = $query->result();
+		foreach ($productos as $producto) {
+			$producto->diasDeInventario = $producto->ventaPromedioDiaPesos == 0 ? 0 : $producto->existenciaPesos / $producto->ventaPromedioDiaPesos;
+		}
+		return $productos;
+	}
+
+	# Obtener la venta por producto por division
+	public function soloProductos($fecha, $division, $regiones, $zonas, $tiendas, $productos, $proveedores){
+		$whereRegiones = $whereZonas = $whereTiendas = $whereProductos = $whereProveedores = "";
+		if($regiones != null) {
+			$regiones = "'" . str_replace(',', "','", implode(',', $regiones)) . "'";
+			$whereRegiones = "AND txr.[Subgroup Code] IN ($regiones)";
+		}
+		if($zonas != null) {
+			$zonas = "'" . str_replace(',', "','", implode(',', $zonas)) . "'";
+			$whereZonas = "AND tiendas.[Subgroup Code] IN ($zonas)";
+		}
+		if($tiendas != null) {
+			$tiendas = "'" . str_replace(',', "','", implode(',', $tiendas)) . "'";
+			$whereTiendas = "AND inve.[Store No_] IN ($tiendas)";
+		}
+		if($productos[0] != '') {
+			$xproductos = array();
+			foreach($productos as $key => $producto){
+				$xproducto = explode('-', $producto);
+				array_push($xproductos, $xproducto[0]);
+			}
+			$productos = $xproductos;
+			$productos = "'" . str_replace(',', "','", implode(',', $productos)) . "'";
+			$whereProductos = "AND inve.[Item No_] IN ($productos)";
+		}
+		if($proveedores != null) {
+			$proveedores = "'" . str_replace(',', "','", implode(',', $proveedores)) . "'";
+			$whereProveedores = "inner join [dbo].[COORPORACION_EL_ASTURIANO\$Vendor] as vendor on items.[Vendor No_] = vendor.[No_]";
+			$whereProveedores .= " AND items.[Vendor No_] IN ($proveedores)";
+		}
+		$sql = "SELECT 'soloproducto' AS tipo, 'false' AS _open, '$division' AS division, '' AS region, '' AS zona, '' AS tienda, [Item No_] as producto, '' as descripcion, avg(precioVenta) as PrecioVenta, SUM(existenciaPiezas) AS existenciaPiezas, SUM(existenciaPesos) AS existenciaPesos, SUM(ventaPromedioDiaPiezas) AS ventaPromedioDiaPiezas, SUM(ventaPromedioDiaPesos) AS ventaPromedioDiaPesos FROM (select [Item No_], [Precio Venta] as precioVenta, ([Existencia Piezas] - VentasNoReg) as existenciaPiezas, (([Existencia Piezas] - VentasNoReg) * [Precio Venta]) as existenciaPesos, [Venta x Dia Piezas] as ventaPromedioDiaPiezas, [Venta x Dia Pesos] as ventaPromedioDiaPesos FROM [BDREPORTS].[dbo].[CTF\$Inventario] inve INNER JOIN [ASTURIANO].[dbo].[COORPORACION_EL_ASTURIANO\$Item] AS items on inve.[Item No_] = items.[No_] $whereProductos $whereProveedores INNER JOIN [ASTURIANO].[dbo].[COORPORACION_EL_ASTURIANO\$Distribution Group Member] AS txr ON inve.[Store No_] = txr.[Distrib_ Loc_ Code] and txr.[Subgroup Code] like 'REGION%' $whereRegiones INNER JOIN [ASTURIANO].[dbo].[COORPORACION_EL_ASTURIANO\$Distribution Group Member] AS tiendas ON inve.[Store No_] = tiendas.[Distrib_ Loc_ Code] AND tiendas.[Subgroup Code] like 'ZONA%' $whereZonas $whereTiendas where Date = '$fecha' and [Division Code] = '$division') as productos group by [Item No_] order by [Item No_] asc";
 		#echo $sql;
 		$query = $this->db->query($sql);
 		$productos = $query->result();

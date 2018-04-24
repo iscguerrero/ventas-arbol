@@ -6,6 +6,7 @@ var nextIndex = 0;
 var colores = ['#c9d8d8', '#d7e1e2', '#e4ebeb', '#f1f5f5', '#ffffff'];
 $(document).ready(function () {
 	/**************************** CONFIGURACION INICIAL DEL DOM ***********************************/
+	$('#fecha').val(_getDate());
 	// Configuracion del datepicker
 	$('.datepicker').datetimepicker({
 		locale: 'es',
@@ -50,6 +51,11 @@ $(document).ready(function () {
 	});
 	// Renderizamos los selectpicker nuevamente
 	$('.selectpicker').selectpicker("refresh");
+	// Seteamos el valor del combo de tiendas
+	if ($.cookie('_tienda') != 'undefined') {
+		$('#tiendas').selectpicker('val', $.cookie('_tienda'));
+		$.removeCookie('_tienda', { path: '/' });
+	}
 	// Actualizamos el combo de zonas cuando hay un cambio en el catalogo de regiones
 	$('#regiones').change(function () {
 		$zonas = obtenerZonas($('#regiones').val());
@@ -73,7 +79,7 @@ $(document).ready(function () {
 		minLength: 3,
 		source: function (request, response) {
 			$.ajax({
-				url: 'Reporte/CatProductos',
+				url: 'CatProductos',
 				dataType: "json",
 				data: {
 					term: $('#productos').val(),
@@ -126,7 +132,11 @@ $(document).ready(function () {
 			$this.removeClass('ti-angle-right').addClass('ti-angle-down');
 			switch (tr.attr('data-tipo')) {
 				case 'division':
-					obtenerData('region', tr);
+					if ($('#solo_productos').prop('checked')) {
+						obtenerData('soloproducto', tr);
+					} else {
+						obtenerData('region', tr);
+					}
 					break;
 				case 'region':
 					obtenerData('zona', tr);
@@ -159,7 +169,7 @@ $(document).ready(function () {
 function obtenerDivisiones() {
 	response = [],
 		$.ajax({
-			url: 'Reporte/CatDivisiones',
+			url: 'CatDivisiones',
 			async: false,
 			dataType: 'json',
 			success: function (data) {
@@ -172,7 +182,7 @@ function obtenerDivisiones() {
 function obtenerRegiones() {
 	response = [],
 		$.ajax({
-			url: 'Reporte/CatRegiones',
+			url: 'CatRegiones',
 			async: false,
 			dataType: 'json',
 			success: function (data) {
@@ -185,7 +195,7 @@ function obtenerRegiones() {
 function obtenerZonas(region) {
 	response = [],
 		$.ajax({
-			url: 'Reporte/CatZonas',
+			url: 'CatZonas',
 			async: false,
 			dataType: 'json',
 			data: { region: region },
@@ -200,7 +210,7 @@ function obtenerZonas(region) {
 function obtenerTiendas(zonas) {
 	response = [],
 		$.ajax({
-			url: 'Reporte/CatTiendas',
+			url: 'CatTiendas',
 			async: false,
 			dataType: 'json',
 			data: { zonas: zonas },
@@ -215,7 +225,7 @@ function obtenerTiendas(zonas) {
 function obtenerProductos() {
 	response = [],
 		$.ajax({
-			url: 'Reporte/CatProductos',
+			url: 'CatProductos',
 			async: false,
 			dataType: 'json',
 			method: 'POST',
@@ -229,7 +239,7 @@ function obtenerProductos() {
 function obtenerProveedores() {
 	response = [],
 		$.ajax({
-			url: 'Reporte/CatProveedores',
+			url: 'CatProveedores',
 			async: false,
 			dataType: 'json',
 			method: 'POST',
@@ -280,7 +290,7 @@ function comprobarZonas() {
 function renderResumen() {
 	$('#bodyResumen').empty();
 	$('#reporte').addClass('hidden');
-	str = $('#formFiltros').serialize();
+	str = $('#formFiltros').serializeIncludeDisabled();
 	$.ajax({
 		url: 'ObtenerResumen',
 		data: str,
@@ -320,7 +330,7 @@ function renderResumen() {
 }
 // Funcion para obtener el data para expandir el arbol
 function obtenerData(tipo, tr) {
-	str = $('#formFiltros').serializeArray();
+	str = $('#formFiltros').serializeArrayIncludeDisabled();
 	division = tr == false ? false : tr.attr('data-division');
 	region = tr == false ? false : tr.attr('data-region');
 	zona = tr == false ? false : tr.attr('data-zona');
@@ -340,6 +350,9 @@ function obtenerData(tipo, tr) {
 			break;
 		case 'producto':
 			url = 'ObtenerProductos';
+			break;
+		case 'soloproducto':
+			url = 'ObtenerSoloProductos';
 			break;
 		default:
 			break;
@@ -428,7 +441,7 @@ function renderRow(parent, data) {
 
 		strSpan = "<span class='ti-angle-right' style='cursor: pointer'></span> ";
 		if (row.tipo == 'division') newRow.style.backgroundColor = colores[0];
-		if (row.tipo == 'region') newRow.style.backgroundColor = colores[1];
+		if (row.tipo == 'region' || row.tipo == 'soloproducto') newRow.style.backgroundColor = colores[1];
 		if (row.tipo == 'zona') newRow.style.backgroundColor = colores[2];
 		if (row.tipo == 'tienda') newRow.style.backgroundColor = colores[3];
 		if (row.tipo == 'producto') newRow.style.backgroundColor = colores[4];
@@ -439,7 +452,7 @@ function renderRow(parent, data) {
 		cellTienda.innerHTML = row.tipo == 'tienda' ? strSpan + row.tiendaDes : '';
 		cellProducto.innerHTML = row.producto;
 		cellDescripcion.innerHTML = row.descripcion;
-		cellPrecioVenta.innerHTML = row.tipo == 'producto' ? formato_numero(row['PrecioVenta'], 2, '.', ',') : '';
+		cellPrecioVenta.innerHTML = row.tipo == 'producto' || row.tipo == 'soloproducto' ? formato_numero(row['PrecioVenta'], 2, '.', ',') : '';
 		cellExistenciaPiezas.innerHTML = formato_numero(row['existenciaPiezas'], 2, '.', ',');
 		cellExistenciaPesos.innerHTML = '$' + formato_numero(row['existenciaPesos'], 2, '.', ',');
 		cellVentaPromedioDiaPiezas.innerHTML = formato_numero(row['ventaPromedioDiaPiezas'], 2, '.', ',');
@@ -464,6 +477,12 @@ function removeItem(parent) {
 	var zona = parent.attr('data-zona');
 	var tienda = parent.attr('data-tienda');
 	if (parent.attr('data-tipo') == 'division') {
+		$('#reporte tbody tr').each(function (index) {
+			if ($(this).index() != parentIndex && $(this).attr('data-division') == division) {
+				$(this).remove();
+			}
+		});
+	} else if (parent.attr('data-tipo') == 'soloproducto') {
 		$('#reporte tbody tr').each(function (index) {
 			if ($(this).index() != parentIndex && $(this).attr('data-division') == division) {
 				$(this).remove();
@@ -503,3 +522,26 @@ function formato_numero(numero, decimales, separador_decimal, separador_miles) {
 	}
 	return numero;
 }
+
+// Funcion para formatear la fecha con javascript
+function _getDate() {
+	var meses = new Array("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre");
+	var today = new Date();
+	var f = new Date();
+	f.setDate(today.getDate() - 1);
+	return f.getDate() + "-" + meses[f.getMonth()] + "-" + f.getFullYear();
+}
+
+// Funcion para serializar un formulario con controles deshabilitados
+$.fn.serializeIncludeDisabled = function () {
+	let disabled = this.find(":input:disabled").removeAttr("disabled");
+	let serialized = this.serialize();
+	disabled.attr("disabled", "disabled");
+	return serialized;
+};
+$.fn.serializeArrayIncludeDisabled = function () {
+	let disabled = this.find(":input:disabled").removeAttr("disabled");
+	let serialized = this.serializeArray();
+	disabled.attr("disabled", "disabled");
+	return serialized;
+};

@@ -60,3 +60,16 @@ $route['ObtenerZonas'] = 'Reporte/ObtenerZonas';
 $route['ObtenerTiendas'] = 'Reporte/ObtenerTiendas';
 $route['ObtenerProductos'] = 'Reporte/ObtenerProductos';
 $route['ComprobarZonas'] = 'Reporte/ComprobarZonas';
+$route['ObtenerSoloProductos'] = 'Reporte/ObtenerSoloProductos';
+
+$route['CatProductos'] = 'Reporte/CatProductos';
+$route['CatDivisiones'] = 'Reporte/CatDivisiones';
+$route['CatRegiones'] = 'Reporte/CatRegiones';
+$route['CatZonas'] = 'Reporte/CatZonas';
+$route['CatTiendas'] = 'Reporte/CatTiendas';
+$route['CatProveedores'] = 'Reporte/CatProveedores';
+
+$route['(:any)'] = function($tienda) {
+	setcookie("_tienda", $tienda, time()+3600, "/");
+	return "Reporte/Index/$tienda";
+};
