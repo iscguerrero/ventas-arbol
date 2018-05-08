@@ -42,10 +42,12 @@
 						<div class="card-content">
 							<table class="table" id="resumen">
 								<thead>
-									<th></th>
-									<th class="text-right">Valor Inventario Pesos</th>
-									<th class="text-right">Venta Promedio Por Día</th>
-									<th class="text-right">Dias De Inventario</th>
+									<tr>
+										<th></th>
+										<th class="text-right">Valor Inventario Pesos</th>
+										<th class="text-right">Venta Promedio Por Día</th>
+										<th class="text-right">Dias De Inventario</th>
+									</tr>
 								</thead>
 								<tbody id="bodyResumen"></tbody>
 							</table>
@@ -75,7 +77,7 @@
 							<div class="col-xs-4">
 								<div class="card">
 									<div class="card-header">
-										<h5 class="card-title">Tiendas asignadas a más de una zona <font id="ntz"><font></h5>
+										<h5 class="card-title">Tiendas asignadas a más de una zona <font id="ntz"></font></h5>
 									</div>
 									<div class="card-content">
 										<div class="stats" id="tz"></div>
@@ -85,7 +87,7 @@
 							<div class="col-xs-4">
 								<div class="card">
 									<div class="card-header">
-										<h5 class="card-title">Tiendas sin zona asignada <font id="ntn"><font></h5>
+										<h5 class="card-title">Tiendas sin zona asignada <font id="ntn"></font></h5>
 									</div>
 									<div class="card-content">
 										<div class="stats" id="tn"></div>
@@ -95,7 +97,7 @@
 							<div class="col-xs-4">
 								<div class="card">
 									<div class="card-header">
-										<h5 class="card-title">Zonas sin región asignada <font id="nzsr"><font></h5>
+										<h5 class="card-title">Zonas sin región asignada <font id="nzsr"></font></h5>
 									</div>
 									<div class="card-content">
 										<div class="stats" id="zsr"></div>
@@ -121,12 +123,12 @@
 					<div class="row">
 						<div class="col-xs-6">
 							<div class="form-group">
-								<input type="text" class="form-control datepicker text-center" name="fecha" id="fecha" placeholder="Al día" required <?php echo $blocked == true ? "readonly" : "" ?> />
+								<input type="text" class="form-control datepicker text-center" name="fecha" id="fecha" placeholder="Al día" required />
 							</div>
 						</div>
 						<div class="col-xs-6">
 							<div class="form-group">
-								<select data-live-search="true" multiple title="Divisiones" class="selectpicker" data-style="btn-info btn-block" data-size="5" id="divisiones" name="divisiones[]" <?php echo $blocked == true ? "disabled" : "" ?>></select>
+								<select data-live-search="true" multiple title="Divisiones" class="selectpicker" data-style="btn-info btn-block" data-size="5" id="divisiones" name="divisiones[]"></select>
 							</div>
 						</div>
 						<div class="col-xs-6">
@@ -146,7 +148,7 @@
 						</div>
 						<div class="col-xs-6">
 							<div class="checkbox">
-									<input name="solo_productos" id="solo_productos" type="checkbox" <?php echo $blocked == true ? "disabled" : "" ?>>
+									<input name="solo_productos" id="solo_productos" type="checkbox">
 									<label for="solo_productos">
 									Solo productos
 								</label>
@@ -176,11 +178,10 @@
 		</div>
 	</div>
 </div>
-
-</body>
 	<script type="text/javascript" src="<?php echo base_url('assets/js/jquery-3.1.1.min.js') ?>"></script>
 	<script type="text/javascript" src="<?php echo base_url('assets/js/bootstrap.min.js') ?>"></script>
 	<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
 	<script type="text/javascript" src="<?php echo base_url('assets/js/moment.min.js') ?>"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/es.js"></script>
 	<script type="text/javascript" src="<?php echo base_url('assets/js/bootstrap-datetimepicker.js') ?>"></script>
@@ -190,4 +191,5 @@
 	<script type="text/javascript" src="<?php echo base_url('assets/js/jquery.freezeheader.js') ?>"></script>
 	<script src="<?php echo base_url('assets/js/jquery.cookie.js') ?>" type="text/javascript"></script>
 	<script type="text/javascript" src="<?php echo base_url('public/index.js') ?>"></script>
+</body>
 </html>
