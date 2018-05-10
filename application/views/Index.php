@@ -23,9 +23,9 @@
 		.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
 			padding: 5px 5px;
 		}
-.ui-autocomplete{
-	z-index: 2147483647
-}
+		.ui-autocomplete{
+			z-index: 2147483647
+		}
 	</style>
 </head>
 <body>

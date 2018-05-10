@@ -7,7 +7,9 @@ class Reporte extends Base_Controller {
 		$this->load->model('item');
 	}
 
-	public function Index($tienda = null) {
+	public function Index() {
+		$tienda = $this->input->get('tienda');
+		if($tienda != null) setcookie("_tienda", $tienda, time()+3600, "/");
 		$data = $tienda == null ? array('blocked' => false) : array('blocked' => true);
 		$this->load->view('Index', $data);
 	}

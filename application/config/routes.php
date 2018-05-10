@@ -69,7 +69,7 @@ $route['CatZonas'] = 'Reporte/CatZonas';
 $route['CatTiendas'] = 'Reporte/CatTiendas';
 $route['CatProveedores'] = 'Reporte/CatProveedores';
 
-$route['(:any)'] = function($tienda) {
+/*$route['(:any)'] = function($tienda) {
 	setcookie("_tienda", $tienda, time()+3600, "/");
 	return "Reporte/Index/$tienda";
-};
+};*/
